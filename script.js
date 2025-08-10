@@ -44,15 +44,6 @@ btn.addEventListener("click", function () {
   }, 2500);
 });
 
-recognition.onerror = (event) => {
-  console.error("Speech recognition error:", event.error);
-  if (event.error === "not-allowed") {
-    alert("Microphone access is blocked. Please allow it in your browser settings.");
-  } else {
-    speak("Sorry, I didn't catch that.");
-  }
-};
-
 // When recognition gets a result
 recognition.onresult = (event) => {
   const command = event.results[0][0].transcript.toLowerCase();
@@ -62,14 +53,26 @@ recognition.onresult = (event) => {
 
 // When recognition ends
 recognition.onend = () => {
-  btn.innerHTML = "Start Listening";
+  btn.innerHTML = "🎤 Start Listening";
   btn.classList.remove("listening");
 };
 
-// Optional: handle errors
+// Handle recognition errors
 recognition.onerror = (event) => {
   console.error("Speech recognition error:", event.error);
-  speak("Sorry, I didn't catch that.");
-  btn.innerHTML = "Start Listening";
+
+  // Reset button state
+  btn.innerHTML = "🎤 Start Listening";
   btn.classList.remove("listening");
+
+  // Handle specific error types
+  if (event.error === "not-allowed") {
+    alert("Microphone access is blocked. Please allow it in your browser settings.");
+  } else if (event.error === "no-speech") {
+    speak("I didn't hear anything. Please try again.");
+  } else if (event.error === "network") {
+    speak("Network error occurred. Please check your connection.");
+  } else {
+    speak("Sorry, I didn't catch that. Please try again.");
+  }
 };
